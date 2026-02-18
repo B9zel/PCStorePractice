@@ -22,14 +22,21 @@ namespace ComputerWorkshop
         // TODO 1: Зарегистрировать нового заказчика
         public Customer RegisterCustomer(string fullName, string phone, string email, string customerType)
         {
-            // Создать нового заказчика с уникальным ID
-            // Установить все данные
-            // Установить дату регистрации = сегодня
-            // Добавить заказчика в список customers
-            // Увеличить nextCustomerId
-            // Вернуть созданного заказчика
-            return null;
-        }
+			Customer customer = new Customer
+			{
+				Id = nextCustomerId,
+				FullName = fullName,
+				Phone = phone,
+				Email = email,
+				CustomerType = customerType,
+				RegistrationDate = DateTime.Now
+			};
+
+			customers.Add(customer);
+			nextCustomerId++;
+
+			return customer;
+		}
         
         // TODO 2: Найти заказчика по телефону
         public Customer FindCustomerByPhone(string phone)
