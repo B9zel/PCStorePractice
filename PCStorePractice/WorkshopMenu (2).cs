@@ -101,17 +101,60 @@ namespace ComputerWorkshop
         public void PlaceOrder()
         {
             Console.WriteLine("=== ОФОРМЛЕНИЕ ЗАКАЗА ===");
-            
-            // 1. Найти или зарегистрировать заказчика
-            // 2. Выбрать сборку (из шаблонных или создать новую)
-            // 3. Проверить наличие всех компонентов через manager.CheckBuildAvailability()
-            // 4. Если компонентов нет - предложить аналоги или ожидание
-            // 5. Создать заказ через customer.CreateOrder()
-            // 6. Рассчитать стоимость
-            // 7. Принять оплату через customer.PayForOrder()
-            // 8. Зафиксировать продажу через manager.RecordSale()
-            // 9. Выдать номер заказа и примерные сроки сборки
-        }
+
+			// 1. Найти или зарегистрировать заказчика
+			Customer customer = GetOrRegisterCustomer();
+			if (customer == null)
+			{
+				Console.WriteLine("Заказчик не выбран. Отмена оформления заказа.");
+				return;
+			}
+
+			// 2. Выбрать сборку (из шаблонных или создать новую)
+			ComputerBuild build = ChooseBuildForOrder();
+			if (build == null)
+			{
+				Console.WriteLine("Сборка не выбрана. Отмена оформления заказа.");
+				return;
+			}
+
+			// 3. Проверить наличие всех компонентов через manager.CheckBuildAvailability()
+			if (!manager.CheckBuildAvailability(build))
+			{
+				Console.WriteLine("Не все компоненты для выбранной сборки есть в наличии.");
+				Console.WriteLine("Вы можете изменить конфигурацию или подождать пополнения склада.");
+				return;
+			}
+
+			// 5. Создать заказ через customer.CreateOrder()
+			Customer.Order order = customer.CreateOrder(build);
+			order.OrderNumber = manager.GetNextOrderNumber();
+
+			// 6. Рассчитать стоимость (уже в заказе)
+			Console.WriteLine($"\nСтоимость заказа: {order.TotalCost} руб.");
+
+			// 7. Принять оплату
+			Console.Write("Введите сумму оплаты (0 - без оплаты): ");
+			string amountText = Console.ReadLine();
+			if (decimal.TryParse(amountText, out decimal amount) && amount > 0)
+			{
+				bool paid = customer.PayForOrder(order, amount);
+				if (paid)
+				{
+					// 8. Зафиксировать продажу
+					manager.RecordSale(amount);
+					Console.WriteLine("Оплата успешно принята.");
+				}
+				else
+				{
+					Console.WriteLine("Не удалось принять оплату.");
+				}
+			}
+
+			// 9. Вывести номер заказа и сроки
+			Console.WriteLine($"\nЗаказ успешно создан. Номер заказа: {order.OrderNumber}");
+			Console.WriteLine("Примерный срок сборки: 3-5 рабочих дней.");
+		}
         
         // TODO 2: Управление заказами
         public void ManageOrders()
@@ -342,6 +385,84 @@ namespace ComputerWorkshop
 				choice > 0 && choice <= list.Count)
 			{
 				return list[choice - 1];
+			}
+
+			return null;
+		}
+
+		// Вспомогательный метод: поиск или регистрация заказчика
+		private Customer GetOrRegisterCustomer()
+		{
+			Console.Write("Введите телефон заказчика: ");
+			string phone = Console.ReadLine();
+
+			Customer customer = manager.FindCustomerByPhone(phone);
+			if (customer != null)
+			{
+				Console.WriteLine("Найден существующий заказчик:");
+				customer.ShowCustomerInfo();
+				return customer;
+			}
+
+			Console.Write("Заказчик не найден. Зарегистрировать нового? (y/n): ");
+			string answer = Console.ReadLine();
+			if (string.IsNullOrEmpty(answer) || answer.Trim().ToLower() != "y")
+			{
+				return null;
+			}
+
+			Console.Write("Введите ФИО: ");
+			string fullName = Console.ReadLine();
+			Console.Write("Введите Email: ");
+			string email = Console.ReadLine();
+			string type;
+			do
+			{
+				Console.Write("Введите тип заказчика (частное лицо / компания / учебное заведение): ");
+				type = Console.ReadLine();
+			} while (string.IsNullOrEmpty(type) || type != "частное лицо" && type != "компания" && type != "учебное заведение");
+
+			customer = manager.RegisterCustomer(fullName, phone, email, type);
+			Console.WriteLine("Заказчик успешно зарегистрирован.");
+			return customer;
+		}
+
+		// Вспомогательный метод: выбор сборки для заказа
+		private ComputerBuild ChooseBuildForOrder()
+		{
+			var builds = manager.GetTemplateBuilds();
+			if (builds.Count == 0)
+			{
+				Console.WriteLine("Шаблонные сборки отсутствуют.");
+				Console.Write("Создать новую сборку? (y/n): ");
+				string answer = Console.ReadLine();
+				if (!string.IsNullOrEmpty(answer) && answer.Trim().ToLower() == "y")
+				{
+					return CreateBuildInteractively();
+				}
+
+				return null;
+			}
+
+			Console.WriteLine("\nДоступные сборки:");
+			for (int i = 0; i < builds.Count; i++)
+			{
+				Console.WriteLine($"{i + 1}. #{builds[i].Id} {builds[i].Name} ({builds[i].Purpose})");
+			}
+
+			Console.Write("Выберите номер сборки (0 - создать новую): ");
+			string choiceText = Console.ReadLine();
+			if (int.TryParse(choiceText, out int choice))
+			{
+				if (choice == 0)
+				{
+					return CreateBuildInteractively();
+				}
+
+				if (choice > 0 && choice <= builds.Count)
+				{
+					return builds[choice - 1];
+				}
 			}
 
 			return null;
