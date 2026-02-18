@@ -252,15 +252,40 @@ namespace ComputerWorkshop
 			return total;
 		}
         
-        // TODO 3: Рассчитать примерную производительность
         public string EstimatePerformance()
         {
-            // На основе компонентов определить примерную производительность:
-            // - Для игрового ПК: оценка в FPS в современных играх
-            // - Для рабочего ПК: оценка скорости рендеринга/компиляции
-            // - Для офисного ПК: оценка общей производительности
-            return "Средняя";
-        }
+			// На основе компонентов определить примерную производительность:
+			// - Для игрового ПК: оценка в FPS в современных играх
+			// - Для рабочего ПК: оценка скорости рендеринга/компиляции
+			// - Для офисного ПК: оценка общей производительности
+			decimal cpuPrice = Processor?.Price ?? 0;
+			decimal gpuPrice = GraphicsCard?.Price ?? 0;
+
+			if (Purpose != null && Purpose.ToLower().Contains("игров"))
+			{
+				if (gpuPrice >= 40000 && cpuPrice >= 20000)
+				{
+					return "Высокая (игровой ПК)";
+				}
+				if (gpuPrice >= 25000)
+				{
+					return "Средняя (игровой ПК)";
+				}
+				return "Базовая (игровой ПК)";
+			}
+
+			if (Purpose != null && Purpose.ToLower().Contains("офис"))
+			{
+				return "Достаточная для офисных задач";
+			}
+
+			if (Purpose != null && Purpose.ToLower().Contains("рабочая станция"))
+			{
+				return "Высокая (рабочая станция)";
+			}
+
+			return "Средняя";
+		}
 
 		private static string ExtractValue(string specification, string key)
 		{
