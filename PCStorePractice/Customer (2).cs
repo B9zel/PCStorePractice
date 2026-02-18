@@ -79,7 +79,6 @@ namespace ComputerWorkshop
 			}
 		}
         
-        // TODO 3: Получить рекомендованные обновления
         public List<Component> GetRecommendedUpgrades(List<Component> availableComponents)
         {
             List<Component> upgrades = new List<Component>();
@@ -109,7 +108,6 @@ namespace ComputerWorkshop
 			return upgrades;
 		}
         
-        // TODO 1: Добавить требование
         public void AddRequirement(string requirement)
         {
 			// Добавить требование в список requirements если его там еще нет
@@ -119,14 +117,20 @@ namespace ComputerWorkshop
 			}
 		}
         
-        // TODO 3: Получить активные заказы
         public List<Order> GetActiveOrders()
         {
             List<Order> active = new List<Order>();
-            
-            // Найти все заказы со статусами "Оформлен", "Оплачен", "В сборке"
-            return active;
-        }
+
+			foreach (var item in orders)
+			{
+				if (item.Status == "Оформлен" || item.Status == "Оплачен" || item.Status == "В сборке")
+				{
+					active.Add(item);
+				}
+			}
+			// Найти все заказы со статусами "Оформлен", "Оплачен", "В сборке" ++
+			return active;
+		}
         
         // Показать информацию о заказчике
         public void ShowCustomerInfo()
