@@ -38,15 +38,87 @@ namespace ComputerWorkshop
 			BuildStatus = "в проекте";
 		}
         
-        // TODO 2: Добавить основной компонент
         public bool AddMainComponent(Component component, string componentType)
         {
-            // Проверить тип компонента и установить в соответствующее свойство
-            // Проверить базовую совместимость с уже установленными компонентами
-            // Если совместимость есть - добавить и вернуть true
-            // Если нет - вернуть false
-            return false;
-        }
+			if (component == null || string.IsNullOrWhiteSpace(componentType))
+			{
+				return false;
+			}
+
+			string type = componentType.ToLower();
+			Component previous = null;
+
+			switch (type)
+			{
+				case "процессор":
+					previous = Processor;
+					Processor = component;
+					break;
+				case "материнская плата":
+					previous = Motherboard;
+					Motherboard = component;
+					break;
+				case "видеокарта":
+					previous = GraphicsCard;
+					GraphicsCard = component;
+					break;
+				case "озу":
+					previous = RAM;
+					RAM = component;
+					break;
+				case "ssd":
+				case "накопитель":
+					previous = Storage;
+					Storage = component;
+					break;
+				case "блок питания":
+					previous = PowerSupply;
+					PowerSupply = component;
+					break;
+				case "корпус":
+					previous = Case;
+					Case = component;
+					break;
+				default:
+					return false;
+			}
+
+			// Базовая проверка совместимости после добавления
+			var issues = CheckCompatibility();
+			if (issues.Count > 0)
+			{
+				// Возвращаем предыдущее состояние, если есть проблемы
+				switch (type)
+				{
+					case "процессор":
+						Processor = previous;
+						break;
+					case "материнская плата":
+						Motherboard = previous;
+						break;
+					case "видеокарта":
+						GraphicsCard = previous;
+						break;
+					case "озу":
+						RAM = previous;
+						break;
+					case "ssd":
+					case "накопитель":
+						Storage = previous;
+						break;
+					case "блок питания":
+						PowerSupply = previous;
+						break;
+					case "корпус":
+						Case = previous;
+						break;
+				}
+
+				return false;
+			}
+
+			return true;
+		}
         
         // TODO 2: Добавить дополнительный компонент
         public void AddAdditionalComponent(Component component)
