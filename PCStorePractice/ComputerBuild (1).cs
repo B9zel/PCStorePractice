@@ -125,7 +125,6 @@ namespace ComputerWorkshop
 			additionalComponents.Add(component);
 		}
         
-        // TODO 3: Проверить совместимость всех компонентов
         public List<string> CheckCompatibility()
         {
             List<string> issues = new List<string>();
@@ -225,19 +224,33 @@ namespace ComputerWorkshop
 			}
 
 			return issues;
-
-			return issues;
         }
         
         // TODO 3: Рассчитать общую стоимость
         public decimal CalculateTotalCost()
         {
-            decimal total = assemblyCost;
-            
-            // Сложить цены всех основных компонентов (если они есть)
-            // Сложить цены всех дополнительных компонентов
-            return total;
-        }
+			decimal total = assemblyCost;
+
+			// Сложить цены всех основных компонентов (если они есть)
+			// Сложить цены всех дополнительных компонентов
+			if (Processor != null) total += Processor.Price;
+			if (Motherboard != null) total += Motherboard.Price;
+			if (GraphicsCard != null) total += GraphicsCard.Price;
+			if (RAM != null) total += RAM.Price;
+			if (Storage != null) total += Storage.Price;
+			if (PowerSupply != null) total += PowerSupply.Price;
+			if (Case != null) total += Case.Price;
+
+			foreach (var comp in additionalComponents)
+			{
+				if (comp != null)
+				{
+					total += comp.Price;
+				}
+			}
+
+			return total;
+		}
         
         // TODO 3: Рассчитать примерную производительность
         public string EstimatePerformance()
