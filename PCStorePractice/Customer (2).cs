@@ -53,15 +53,22 @@ namespace ComputerWorkshop
 			return newOrder;
 		}
         
-        // TODO 2: Оплатить заказ
         public bool PayForOrder(Order order, decimal amount)
         {
-            // Проверить что сумма оплаты достаточна
-            // Увеличить PaidAmount
-            // Если оплачена полная сумма - изменить статус на "Оплачен"
-            // Вернуть true если оплата успешна
-            return false;
-        }
+			if (order == null || amount <= 0)
+			{
+				return false;
+			}
+
+			order.PaidAmount += amount;
+
+			if (order.PaidAmount >= order.TotalCost)
+			{
+				order.Status = "Оплачен";
+			}
+
+			return true;
+		}
         
         // TODO 3: Сохранить конфигурацию
         public void SaveConfiguration(ComputerBuild build)
