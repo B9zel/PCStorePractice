@@ -123,8 +123,8 @@ namespace ComputerWorkshop
         // TODO 2: Добавить дополнительный компонент
         public void AddAdditionalComponent(Component component)
         {
-            // Добавить компонент в список additionalComponents
-        }
+			additionalComponents.Add(component);
+		}
         
         // TODO 3: Проверить совместимость всех компонентов
         public List<string> CheckCompatibility()
