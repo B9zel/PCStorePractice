@@ -36,10 +36,25 @@ namespace ComputerWorkshop
             manager.AddComponent(new Component(7, "Meshify C", "Fractal Design", "FD-CA-MESH-C", 
                 8000, 24, 7, "корпус", "Форм-фактор: ATX, Материал: сталь/пластик"));
             
-            // Инициализация шаблонных сборок
+             // Инициализация шаблонных сборок
             ComputerBuild gamingBuild = manager.CreateTemplateBuild("Игровой ПК среднего класса", "игровой");
+           
             // TODO: Добавить компоненты в сборку
-            manager.AddTemplateBuild(gamingBuild);
+            var cpu = manager.FindComponentsByType("процессор").FirstOrDefault();
+            var mb = manager.FindComponentsByType("материнская плата").FirstOrDefault();
+            var gpu = manager.FindComponentsByType("видеокарта").FirstOrDefault();
+            var ram = manager.FindComponentsByType("ОЗУ").FirstOrDefault();
+            var ssd = manager.FindComponentsByType("SSD").FirstOrDefault();
+            var psu = manager.FindComponentsByType("блок питания").FirstOrDefault();
+            var casePC = manager.FindComponentsByType("корпус").FirstOrDefault();
+
+            if (cpu != null) gamingBuild.AddMainComponent(cpu, "процессор");
+            if (mb != null) gamingBuild.AddMainComponent(mb, "материнская плата");
+            if (gpu != null) gamingBuild.AddMainComponent(gpu, "видеокарта");
+            if (ram != null) gamingBuild.AddMainComponent(ram, "ОЗУ");
+            if (ssd != null) gamingBuild.AddMainComponent(ssd, "SSD");
+            if (psu != null) gamingBuild.AddMainComponent(psu, "блок питания");
+            if (casePC != null) gamingBuild.AddMainComponent(casePC, "корпус");
         }
         
         // TODO 1: Конфигуратор компьютера

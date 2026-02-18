@@ -96,13 +96,11 @@ namespace ComputerWorkshop
 			return false;
 		}
 
-		// TODO 3: Зафиксировать продажу
 		public void RecordSale(decimal amount)
         {
 			totalRevenue += Math.Max(amount, 0.0m);
 		}
         
-        // TODO 3: Получить следующий номер заказа
         public int GetNextOrderNumber()
         {
             return nextOrderNumber++;
