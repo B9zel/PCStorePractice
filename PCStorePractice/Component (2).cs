@@ -27,9 +27,7 @@ namespace ComputerWorkshop
             Model = model;
 
 			Price = price < 0 ? 100 : price;
-
-			// TODO 2: Проверить что гарантия не отрицательная
-			// Если warranty < 0, установить 0 (без гарантии)
+			WarrantyMonths = warranty < 0 ? 0 : warranty;
 
 			StockQuantity = stock;
             
