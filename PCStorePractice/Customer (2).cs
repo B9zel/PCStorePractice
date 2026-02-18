@@ -70,11 +70,14 @@ namespace ComputerWorkshop
 			return true;
 		}
         
-        // TODO 3: Сохранить конфигурацию
         public void SaveConfiguration(ComputerBuild build)
         {
-            // Добавить сборку в список savedConfigs
-        }
+			// Добавить сборку в список savedConfigs
+			if (build != null && !savedConfigs.Contains(build))
+			{
+				savedConfigs.Add(build);
+			}
+		}
         
         // TODO 3: Получить рекомендованные обновления
         public List<Component> GetRecommendedUpgrades(List<Component> availableComponents)
