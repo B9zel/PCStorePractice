@@ -348,7 +348,7 @@ namespace ComputerWorkshop
             Console.WriteLine($"=== СБОРКА #{Id}: {Name} ===");
             Console.WriteLine($"Назначение: {Purpose}");
             Console.WriteLine($"Дата создания: {CreationDate:dd.MM.yyyy}");
-            Console.WriteLine($"Статус: {/* TODO 1: Вывести статус */}");
+            Console.WriteLine($"Статус: {BuildStatus}");
             
             Console.WriteLine("\nКомпоненты:");
             if (Processor != null) Console.WriteLine($"  Процессор: {Processor}");
@@ -379,7 +379,7 @@ namespace ComputerWorkshop
                 {
                     Console.WriteLine($"  - {issue}");
                 }
-            }
-        }
+            }        
+		}
     }
 }
