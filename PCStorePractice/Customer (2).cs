@@ -112,8 +112,12 @@ namespace ComputerWorkshop
         // TODO 1: Добавить требование
         public void AddRequirement(string requirement)
         {
-            // Добавить требование в список requirements если его там еще нет
-        }
+			// Добавить требование в список requirements если его там еще нет
+			if (!requirements.Contains(requirement))
+			{
+				requirements.Add(requirement);
+			}
+		}
         
         // TODO 3: Получить активные заказы
         public List<Order> GetActiveOrders()
