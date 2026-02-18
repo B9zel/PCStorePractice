@@ -33,17 +33,25 @@ namespace ComputerWorkshop
             public string Notes { get; set; } // Примечания по сборке
         }
         
-        // TODO 2: Создать новый заказ
         public Order CreateOrder(ComputerBuild build)
         {
-            // Создать новый объект Order
-            // Установить текущую дату как дату заказа
-            // Рассчитать общую стоимость через build.CalculateTotalCost()
-            // Установить начальный статус
-            // Добавить заказ в историю orders
-            // Вернуть созданный заказ
-            return null;
-        }
+			if (build == null)
+			{
+				throw new ArgumentNullException(nameof(build));
+			}
+
+			Order newOrder = new Order
+			{
+				Build = build,
+				OrderDate = DateTime.Now,
+				TotalCost = build.CalculateTotalCost(),
+				PaidAmount = 0m,
+				Status = "Оформлен"
+			};
+
+			orders.Add(newOrder);
+			return newOrder;
+		}
         
         // TODO 2: Оплатить заказ
         public bool PayForOrder(Order order, decimal amount)
