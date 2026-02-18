@@ -57,7 +57,6 @@ namespace ComputerWorkshop
             if (casePC != null) gamingBuild.AddMainComponent(casePC, "корпус");
         }
         
-        // TODO 1: Конфигуратор компьютера
         public void ConfigureComputer()
         {
             Console.WriteLine("=== КОНФИГУРАТОР КОМПЬЮТЕРА ===");
@@ -86,11 +85,17 @@ namespace ComputerWorkshop
         public void ShowTemplateBuilds()
         {
             Console.WriteLine("=== ГОТОВЫЕ КОНФИГУРАЦИИ ===");
-            
-            // Получить все шаблонные сборки через manager.GetTemplateBuilds()
-            // Сгруппировать сборки по назначению (игровые, офисные и т.д.)
-            // Для каждой сборки вызвать ShowBuildInfo()
-        }
+
+			var Group = manager.GetTemplateBuilds().GroupBy(item => item.Purpose);
+			foreach (var group in Group)
+			{
+				Console.WriteLine(group.Key);
+				foreach (var item in group)
+				{
+					item.ShowBuildInfo();
+				}
+			}
+		}
         
         // TODO 2: Оформить заказ на сборку
         public void PlaceOrder()
