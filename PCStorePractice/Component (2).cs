@@ -25,14 +25,13 @@ namespace ComputerWorkshop
             Name = name;
             Manufacturer = manufacturer;
             Model = model;
-            
-            // TODO 2: Проверить что цена не отрицательная
-            // Если цена < 0, установить минимальную цену 100
-            
-            // TODO 2: Проверить что гарантия не отрицательная
-            // Если warranty < 0, установить 0 (без гарантии)
-            
-            StockQuantity = stock;
+
+			Price = price < 0 ? 100 : price;
+
+			// TODO 2: Проверить что гарантия не отрицательная
+			// Если warranty < 0, установить 0 (без гарантии)
+
+			StockQuantity = stock;
             
             // TODO 1: Сохранить тип компонента и спецификации
         }
