@@ -35,8 +35,8 @@ namespace ComputerWorkshop
             Name = name;
             Purpose = purpose;
             CreationDate = DateTime.Now;
-            // TODO 1: Установить начальный статус "в проекте"
-        }
+			BuildStatus = "в проекте";
+		}
         
         // TODO 2: Добавить основной компонент
         public bool AddMainComponent(Component component, string componentType)
