@@ -83,11 +83,31 @@ namespace ComputerWorkshop
         public List<Component> GetRecommendedUpgrades(List<Component> availableComponents)
         {
             List<Component> upgrades = new List<Component>();
-            
-            // На основе истории заказов и требований заказчика
-            // Предложить компоненты для апгрейда существующих систем
-            return upgrades;
-        }
+
+			// На основе истории заказов и требований заказчика
+			// Предложить компоненты для апгрейда существующих систем
+			if (availableComponents == null || availableComponents.Count == 0)
+			{
+				return upgrades;
+			}
+
+			bool wantsGaming = requirements.Exists(r => r.ToLower().Contains("игр"));
+
+			foreach (var component in availableComponents)
+			{
+				if (component == null) continue;
+
+				// Простая логика: для игровых требований больше интересуют мощные CPU/GPU
+				if (wantsGaming &&
+					(component.ComponentType == "видеокарта" || component.ComponentType == "процессор") &&
+					component.Price > 0)
+				{
+					upgrades.Add(component);
+				}
+			}
+
+			return upgrades;
+		}
         
         // TODO 1: Добавить требование
         public void AddRequirement(string requirement)
