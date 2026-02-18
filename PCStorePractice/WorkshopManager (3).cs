@@ -47,13 +47,17 @@ namespace ComputerWorkshop
         // TODO 2: Найти компоненты по типу
         public List<Component> FindComponentsByType(string componentType)
         {
-            List<Component> result = new List<Component>();
-            
-            // Пройти по всем компонентам
-            // Если тип компонента совпадает - добавить в результат
-            // Отфильтровать только те, что есть в наличии
-            return result;
-        }
+			List<Component> result = new List<Component>();
+
+			foreach (Component component in components)
+			{
+				if (component.ComponentType == componentType && component.StockQuantity > 0)
+				{
+					result.Add(component);
+				}
+			}
+			return result;
+		}
         
         // TODO 3: Создать шаблонную сборку
         public ComputerBuild CreateTemplateBuild(string name, string purpose)
