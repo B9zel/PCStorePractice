@@ -14,11 +14,11 @@ namespace ComputerWorkshop
         public decimal Price { get; set; }             // Цена
         public int WarrantyMonths { get; set; }        // Гарантия в месяцах
         public int StockQuantity { get; set; }         // Количество на складе
-        
-        // TODO 1: Добавить свойство ComponentType (тип: процессор, видеокарта, ОЗУ, SSD, материнская плата, блок питания)
-        // TODO 1: Добавить свойство Specifications (спецификации: JSON или строка с параметрами)
-        
-        public Component(int id, string name, string manufacturer, string model, 
+
+		public string ComponentType { get; set; }
+		public string Specification { get; set; }
+
+		public Component(int id, string name, string manufacturer, string model, 
                         decimal price, int warranty, int stock, string type, string specs)
         {
             Id = id;
