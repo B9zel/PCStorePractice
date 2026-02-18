@@ -41,11 +41,8 @@ namespace ComputerWorkshop
         // TODO 2: Найти заказчика по телефону
         public Customer FindCustomerByPhone(string phone)
         {
-            // Пройти по всем заказчикам в списке customers
-            // Если телефон совпадает - вернуть заказчика
-            // Если не найден - вернуть null
-            return null;
-        }
+			return customers.Find(x => x.Phone == phone);
+		}
         
         // TODO 2: Найти компоненты по типу
         public List<Component> FindComponentsByType(string componentType)
