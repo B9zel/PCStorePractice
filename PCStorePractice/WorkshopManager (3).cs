@@ -62,13 +62,12 @@ namespace ComputerWorkshop
         // TODO 3: Создать шаблонную сборку
         public ComputerBuild CreateTemplateBuild(string name, string purpose)
         {
-            // Создать новую сборку с уникальным ID
-            // Установить название и назначение
-            // Добавить в список templateBuilds
-            // Увеличить nextBuildId
-            // Вернуть созданную сборку
-            return null;
-        }
+			ComputerBuild NewBuild = new ComputerBuild(nextBuildId, name, purpose);
+			AddTemplateBuild(NewBuild);
+			nextBuildId++;
+
+			return NewBuild;
+		}
         
         // TODO 3: Проверить наличие компонентов для сборки
         public bool CheckBuildAvailability(ComputerBuild build)
