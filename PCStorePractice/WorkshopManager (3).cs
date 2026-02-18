@@ -59,7 +59,6 @@ namespace ComputerWorkshop
 			return result;
 		}
         
-        // TODO 3: Создать шаблонную сборку
         public ComputerBuild CreateTemplateBuild(string name, string purpose)
         {
 			ComputerBuild NewBuild = new ComputerBuild(nextBuildId, name, purpose);
@@ -69,7 +68,6 @@ namespace ComputerWorkshop
 			return NewBuild;
 		}
         
-        // TODO 3: Проверить наличие компонентов для сборки
         public bool CheckBuildAvailability(ComputerBuild build)
         {
 			foreach (var item in build.GetAdditionalComponents())
@@ -101,8 +99,8 @@ namespace ComputerWorkshop
 		// TODO 3: Зафиксировать продажу
 		public void RecordSale(decimal amount)
         {
-            // Увеличить totalRevenue на amount
-        }
+			totalRevenue += Math.Max(amount, 0.0m);
+		}
         
         // TODO 3: Получить следующий номер заказа
         public int GetNextOrderNumber()
