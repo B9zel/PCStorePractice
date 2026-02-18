@@ -15,11 +15,9 @@ namespace ComputerWorkshop
         public string Phone { get; set; }
         public string Email { get; set; }
         public DateTime RegistrationDate { get; set; }
-        
-        // TODO 1: Добавить свойство CustomerType (тип: частное лицо, компания, учебное заведение)
-        // TODO 1: Добавить свойство Requirements (требования к ПК: список)
-        
-        private List<string> requirements = new List<string>();
+        public string CustomerType { get; set; }
+
+		private List<string> requirements = new List<string>();
         private List<Order> orders = new List<Order>(); // История заказов
         private List<ComputerBuild> savedConfigs = new List<ComputerBuild>(); // Сохраненные конфигурации
         

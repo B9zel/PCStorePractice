@@ -226,7 +226,6 @@ namespace ComputerWorkshop
 			return issues;
         }
         
-        // TODO 3: Рассчитать общую стоимость
         public decimal CalculateTotalCost()
         {
 			decimal total = assemblyCost;
