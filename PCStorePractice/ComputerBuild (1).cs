@@ -26,8 +26,8 @@ namespace ComputerWorkshop
         
         private List<Component> additionalComponents = new List<Component>(); // Доп. компоненты
         private decimal assemblyCost = 3000;           // Стоимость сборки
-        
-        // TODO 1: Добавить свойство BuildStatus (статус: в проекте, компоненты заказаны, в сборке, готов)
+
+		private string BuildStatus { get; set; }      // (статус: в проекте, компоненты заказаны, в сборке, готов)
         
         public ComputerBuild(int id, string name, string purpose)
         {
