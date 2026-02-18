@@ -369,17 +369,62 @@ namespace ComputerWorkshop
         public void ProvideUpgradeConsultation()
         {
             Console.WriteLine("=== КОНСУЛЬТАЦИЯ ПО АПГРЕЙДУ ===");
-            
-            // 1. Найти заказчика
-            // 2. Просмотреть его предыдущие заказы
-            // 3. Узнать текущие потребности и бюджет
-            // 4. На основе существующей системы предложить варианты апгрейда
-            // 5. Проверить совместимость новых компонентов со старыми
-            // 6. Рассчитать стоимость и ожидаемый прирост производительности
-        }
-        
-        // TODO 3: Показать статистику мастерской
-        public void ShowWorkshopStats()
+
+			// 1. Найти заказчика
+			Console.Write("Введите телефон заказчика: ");
+			string phone = Console.ReadLine();
+			Customer customer = manager.FindCustomerByPhone(phone);
+			if (customer == null)
+			{
+				Console.WriteLine("Заказчик не найден.");
+				return;
+			}
+
+			// 2. Просмотреть его предыдущие заказы
+			customer.ShowCustomerInfo();
+
+			// 3. Узнать текущие потребности и бюджет
+			Console.Write("Опишите текущие потребности (добавятся к требованиям заказчика): ");
+			string newRequirement = Console.ReadLine();
+			if (!string.IsNullOrWhiteSpace(newRequirement))
+			{
+				customer.AddRequirement(newRequirement);
+			}
+
+			Console.Write("Введите примерный бюджет на апгрейд: ");
+			string budgetText = Console.ReadLine();
+			decimal budget = 0;
+			decimal.TryParse(budgetText, out budget);
+
+			// 4. На основе существующей системы предложить варианты апгрейда
+			var recommendations = customer.GetRecommendedUpgrades(manager.GetAllComponents());
+			if (budget > 0)
+			{
+				recommendations = recommendations
+					.Where(c => c.Price <= budget)
+					.ToList();
+			}
+
+			if (recommendations.Count == 0)
+			{
+				Console.WriteLine("Подходящих вариантов апгрейда не найдено.");
+				return;
+			}
+
+			Console.WriteLine("\nРекомендуемые компоненты для апгрейда:");
+			foreach (var comp in recommendations)
+			{
+				Console.WriteLine($"{comp.Id}. {comp} | Остаток: {comp.StockQuantity}");
+			}
+
+			// 6. Рассчитать стоимость и ожидаемый прирост производительности (общая оценка)
+			decimal totalUpgradeCost = recommendations.Sum(c => c.Price);
+			Console.WriteLine($"\nОриентировочная стоимость набора апгрейда: {totalUpgradeCost} руб.");
+			Console.WriteLine("Ожидаемый прирост производительности: от средней до высокой (в зависимости от выбранных компонентов).");
+		}
+
+		// TODO 3: Показать статистику мастерской
+		public void ShowWorkshopStats()
         {
             Console.WriteLine("=== СТАТИСТИКА МАСТЕРСКОЙ ===");
             
