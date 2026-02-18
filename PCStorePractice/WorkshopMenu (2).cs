@@ -282,13 +282,88 @@ namespace ComputerWorkshop
         public void ManageInventory()
         {
             Console.WriteLine("=== УПРАВЛЕНИЕ СКЛАДОМ ===");
-            
-            // 1. Показать все компоненты с остатками
-            // 2. Показать компоненты с низким остатком (< 3 шт.)
-            // 3. Возможность пополнения склада
-            // 4. Статистика продаж компонентов
-            // 5. Поиск компонентов по параметрам
-        }
+
+			// 1. Показать все компоненты с остатками
+			var components = manager.GetAllComponents();
+			if (components.Count == 0)
+			{
+				Console.WriteLine("На складе нет компонентов.");
+				return;
+			}
+
+			Console.WriteLine("\nВсе компоненты:");
+			foreach (var comp in components)
+			{
+				Console.WriteLine($"{comp.Id}. {comp} | Остаток: {comp.StockQuantity}");
+			}
+
+			// 2. Показать компоненты с низким остатком (< 3 шт.)
+			var lowStock = components.Where(c => c.StockQuantity < 3).ToList();
+			if (lowStock.Count > 0)
+			{
+				Console.WriteLine("\nКомпоненты с низким остатком (< 3):");
+				foreach (var comp in lowStock)
+				{
+					Console.WriteLine($"{comp.Id}. {comp} | Остаток: {comp.StockQuantity}");
+				}
+			}
+
+			// 3. Возможность пополнения склада
+			string restockAnswer;
+			do
+			{
+				Console.Write("\nХотите пополнить склад? (y/n): ");
+				restockAnswer = Console.ReadLine();
+			} while (restockAnswer != "y" && restockAnswer != "n");
+
+			if (!string.IsNullOrEmpty(restockAnswer) && restockAnswer.Trim().ToLower() == "y")
+			{
+				Console.Write("Введите ID компонента: ");
+				string idText = Console.ReadLine();
+				Console.Write("Введите количество для добавления: ");
+				string qtyText = Console.ReadLine();
+
+				if (int.TryParse(idText, out int id) && int.TryParse(qtyText, out int qty) && qty > 0)
+				{
+					var comp = components.FirstOrDefault(c => c.Id == id);
+					if (comp != null)
+					{
+						comp.Restock(qty);
+						Console.WriteLine("Склад успешно пополнен.");
+					}
+					else
+					{
+						Console.WriteLine("Компонент с таким ID не найден.");
+					}
+				}
+				else
+				{
+					Console.WriteLine("Неверные данные для пополнения склада.");
+				}
+			}
+
+			// 5. Поиск компонентов по параметрам (по типу)
+			Console.Write("\nВведите тип компонента для поиска (например, 'процессор') или Enter для пропуска: ");
+			string typeSearch = Console.ReadLine();
+			if (!string.IsNullOrWhiteSpace(typeSearch))
+			{
+				var found = components
+					.Where(c => c.ComponentType != null && c.ComponentType.IndexOf(typeSearch, StringComparison.OrdinalIgnoreCase) >= 0)
+					.ToList();
+				if (found.Count == 0)
+				{
+					Console.WriteLine("Компоненты по указанному типу не найдены.");
+				}
+				else
+				{
+					Console.WriteLine("\nНайденные компоненты:");
+					foreach (var comp in found)
+					{
+						Console.WriteLine($"{comp.Id}. {comp} | Остаток: {comp.StockQuantity}");
+					}
+				}
+			}
+		}
         
         // TODO 3: Консультация по апгрейду
         public void ProvideUpgradeConsultation()
