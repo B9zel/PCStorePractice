@@ -36,9 +36,8 @@ namespace ComputerWorkshop
         
         public override string ToString()
         {
-            // TODO 3: Вернуть строку в формате "Процессор Intel Core i5-13400F (Intel) - 25000 руб. (24 мес гарантии)"
-            return $"{Name} ({Manufacturer})";
-        }
+			return $"{ComponentType} {Name} ({Manufacturer}) - {Price} руб. ({WarrantyMonths} мес гарантия)";
+		}
         
         // Проверить наличие на складе
         public bool IsInStock(int quantity = 1)
