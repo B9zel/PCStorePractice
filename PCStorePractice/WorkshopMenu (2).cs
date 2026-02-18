@@ -160,12 +160,123 @@ namespace ComputerWorkshop
         public void ManageOrders()
         {
             Console.WriteLine("=== УПРАВЛЕНИЕ ЗАКАЗАМИ ===");
-            
-            // 1. Показать все активные заказы
-            // 2. Возможность изменить статус заказа (в сборку, готов, выдан)
-            // 3. Добавление примечаний по сборке
-            // 4. Отслеживание этапов сборки
-        }
+
+			// 1. Показать все активные заказы
+			Console.Write("Введите телефон заказчика (пусто - показать всех): ");
+			string phone = Console.ReadLine();
+
+			List<Customer> customers = new List<Customer>();
+			if (string.IsNullOrWhiteSpace(phone))
+			{
+				customers = manager.GetAllCustomers();
+			}
+			else
+			{
+				var customer = manager.FindCustomerByPhone(phone);
+				if (customer != null)
+				{
+					customers.Add(customer);
+				}
+			}
+
+			if (customers.Count == 0)
+			{
+				Console.WriteLine("Заказчики не найдены.");
+				return;
+			}
+
+			foreach (var cust in customers)
+			{
+				Console.WriteLine($"\nЗаказчик: {cust.FullName} ({cust.Phone})");
+				var activeOrders = cust.GetActiveOrders();
+				if (activeOrders.Count == 0)
+				{
+					Console.WriteLine("  Активных заказов нет.");
+				}
+				else
+				{
+					foreach (var order in activeOrders)
+					{
+						Console.WriteLine($"  Заказ #{order.OrderNumber}: {order.Status}, сумма {order.TotalCost} руб., оплачено {order.PaidAmount} руб.");
+					}
+				}
+			}
+
+			// 2. Возможность изменить статус заказа
+			Console.Write("\nВведите телефон заказчика для изменения заказа (или Enter для выхода): ");
+			string editPhone = Console.ReadLine();
+			if (string.IsNullOrWhiteSpace(editPhone))
+			{
+				return;
+			}
+
+			var editCustomer = manager.FindCustomerByPhone(editPhone);
+			if (editCustomer == null)
+			{
+				Console.WriteLine("Заказчик не найден.");
+				return;
+			}
+
+			var editOrders = editCustomer.GetActiveOrders();
+			if (editOrders.Count == 0)
+			{
+				Console.WriteLine("У заказчика нет активных заказов.");
+				return;
+			}
+
+			Console.Write("Введите номер заказа для редактирования: ");
+			string orderNumberText = Console.ReadLine();
+			if (!int.TryParse(orderNumberText, out int orderNumber))
+			{
+				Console.WriteLine("Неверный номер заказа.");
+				return;
+			}
+
+			var editOrder = editOrders.FirstOrDefault(o => o.OrderNumber == orderNumber);
+			if (editOrder == null)
+			{
+				Console.WriteLine("Заказ не найден среди активных.");
+				return;
+			}
+
+			Console.WriteLine("Выберите действие:");
+			Console.WriteLine("1. Изменить статус заказа");
+			Console.WriteLine("2. Добавить примечание");
+			Console.Write("Ваш выбор: ");
+			string action = Console.ReadLine();
+
+			if (action == "1")
+			{
+				Console.WriteLine("Введите новый статус (Оформлен / Оплачен / В сборке / Готов / Выдан): ");
+				string newStatus = Console.ReadLine();
+				if (!string.IsNullOrWhiteSpace(newStatus))
+				{
+					editOrder.Status = newStatus;
+					if (newStatus == "Готов" || newStatus == "Выдан")
+					{
+						editOrder.CompletionDate = DateTime.Now;
+					}
+					Console.WriteLine("Статус заказа обновлён.");
+				}
+			}
+			else if (action == "2")
+			{
+				Console.Write("Введите примечание: ");
+				string note = Console.ReadLine();
+				if (!string.IsNullOrWhiteSpace(note))
+				{
+					if (string.IsNullOrEmpty(editOrder.Notes))
+					{
+						editOrder.Notes = note;
+					}
+					else
+					{
+						editOrder.Notes += Environment.NewLine + note;
+					}
+					Console.WriteLine("Примечание добавлено.");
+				}
+			}
+		}
         
         // TODO 3: Управление складом
         public void ManageInventory()
