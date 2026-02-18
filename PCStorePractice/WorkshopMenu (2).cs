@@ -427,13 +427,39 @@ namespace ComputerWorkshop
 		public void ShowWorkshopStats()
         {
             Console.WriteLine("=== СТАТИСТИКА МАСТЕРСКОЙ ===");
-            
-            // Вывести общую выручку через manager.GetTotalRevenue()
-            // Вывести количество зарегистрированных заказчиков
-            // Вывести самые популярные компоненты
-            // Вывести статистику по типам сборок (игровые/офисные и т.д.)
-            // Вывести компоненты с низким остатком на складе
-        }
+
+			// Вывести общую выручку через manager.GetTotalRevenue()
+			Console.WriteLine($"Общая выручка: {manager.GetTotalRevenue()} руб.");
+
+			// Вывести количество зарегистрированных заказчиков
+			Console.WriteLine($"Количество зарегистрированных заказчиков: {manager.GetCustomerCount()}");
+
+			var components = manager.GetAllComponents();
+			Console.WriteLine($"Количество позиций на складе: {components.Count}");
+
+			// Вывести компоненты с низким остатком
+			var lowStock = components.Where(c => c.StockQuantity < 3).ToList();
+			if (lowStock.Count > 0)
+			{
+				Console.WriteLine("\nКомпоненты с низким остатком (< 3):");
+				foreach (var comp in lowStock)
+				{
+					Console.WriteLine($"{comp.Id}. {comp} | Остаток: {comp.StockQuantity}");
+				}
+			}
+
+			// Вывести статистику по типам сборок (игровые/офисные и т.д.)
+			var builds = manager.GetTemplateBuilds();
+			if (builds.Count > 0)
+			{
+				Console.WriteLine("\nСтатистика по типам сборок:");
+				var byPurpose = builds.GroupBy(b => b.Purpose);
+				foreach (var group in byPurpose)
+				{
+					Console.WriteLine($"  {group.Key}: {group.Count()} шт.");
+				}
+			}
+		}
         
         // Готовый метод - главное меню
         public void ShowMainMenu()
