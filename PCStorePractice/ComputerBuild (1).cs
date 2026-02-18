@@ -341,6 +341,11 @@ namespace ComputerWorkshop
 			return 0;
 		}
 
+		public List<Component> GetAdditionalComponents()
+		{
+			return additionalComponents;
+		}
+
 		// Показать информацию о сборке
 		public void ShowBuildInfo()
         {

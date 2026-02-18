@@ -72,14 +72,34 @@ namespace ComputerWorkshop
         // TODO 3: Проверить наличие компонентов для сборки
         public bool CheckBuildAvailability(ComputerBuild build)
         {
-            // Проверить наличие всех основных компонентов сборки
-            // Проверить наличие всех дополнительных компонентов
-            // Вернуть true если ВСЕ компоненты в наличии
-            return true;
-        }
-        
-        // TODO 3: Зафиксировать продажу
-        public void RecordSale(decimal amount)
+			foreach (var item in build.GetAdditionalComponents())
+			{
+				if (!HasComponentInStock(item))
+				{
+					return false;
+				}
+			}
+			return HasComponentInStock(build.Processor) && HasComponentInStock(build.Motherboard) && HasComponentInStock(build.GraphicsCard) &&
+					HasComponentInStock(build.RAM) && HasComponentInStock(build.Storage) && HasComponentInStock(build.PowerSupply) &&
+					HasComponentInStock(build.Case);
+		}
+		private bool HasComponentInStock(Component comp)
+		{
+			if (comp == null) return true;
+
+			foreach (Component component in components)
+			{
+				if (component.IsInStock() && component.Manufacturer == comp.Manufacturer && component.Name == comp.Name
+					&& component.Model == comp.Model && component.ComponentType == comp.ComponentType)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
+		// TODO 3: Зафиксировать продажу
+		public void RecordSale(decimal amount)
         {
             // Увеличить totalRevenue на amount
         }
