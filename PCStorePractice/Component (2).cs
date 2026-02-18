@@ -30,9 +30,9 @@ namespace ComputerWorkshop
 			WarrantyMonths = warranty < 0 ? 0 : warranty;
 
 			StockQuantity = stock;
-            
-            // TODO 1: Сохранить тип компонента и спецификации
-        }
+			ComponentType = type;
+			Specification = specs;
+		}
         
         public override string ToString()
         {
