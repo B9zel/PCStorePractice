@@ -120,7 +120,6 @@ namespace ComputerWorkshop
 			return true;
 		}
         
-        // TODO 2: Добавить дополнительный компонент
         public void AddAdditionalComponent(Component component)
         {
 			additionalComponents.Add(component);
@@ -130,15 +129,104 @@ namespace ComputerWorkshop
         public List<string> CheckCompatibility()
         {
             List<string> issues = new List<string>();
-            
-            // Проверить основные пары совместимости:
-            // 1. Процессор и материнская плата (сокет)
-            // 2. Блок питания и видеокарта (мощность)
-            // 3. Корпус и материнская плата (форм-фактор)
-            // 4. ОЗУ и материнская плата (тип и частота)
-            // Добавить найденные проблемы в список issues
-            
-            return issues;
+
+			if (Processor != null && Motherboard != null &&
+					  !string.IsNullOrEmpty(Processor.Specification) &&
+					  !string.IsNullOrEmpty(Motherboard.Specification))
+			{
+				string cpuSocket = ExtractValue(Processor.Specification, "Сокет");
+				string mbSocket = ExtractValue(Motherboard.Specification, "Сокет");
+
+				if (!string.IsNullOrEmpty(cpuSocket) &&
+					!string.IsNullOrEmpty(mbSocket) &&
+					!string.Equals(cpuSocket, mbSocket, StringComparison.OrdinalIgnoreCase))
+				{
+					issues.Add($"Несовместимость сокета процессора ({cpuSocket}) и материнской платы ({mbSocket}).");
+				}
+			}
+
+			// 2. Блок питания и видеокарта: простая проверка по мощности БП
+			if (PowerSupply != null && GraphicsCard != null &&
+				!string.IsNullOrEmpty(PowerSupply.Specification))
+			{
+				int psuWatts = ExtractFirstNumber(PowerSupply.Specification);
+				if (psuWatts > 0 && psuWatts < 500)
+				{
+					issues.Add("Рекомендуется более мощный блок питания для данной видеокарты (меньше 500W).");
+				}
+			}
+
+			// 3. Корпус и материнская плата: проверка форм-фактора
+			if (Case != null && Motherboard != null &&
+				!string.IsNullOrEmpty(Case.Specification) &&
+				!string.IsNullOrEmpty(Motherboard.Specification))
+			{
+				string caseFormFactor = ExtractValue(Case.Specification, "Форм-фактор");
+				string mbFormFactor = ExtractValue(Motherboard.Specification, "Форм-фактор");
+
+				// Если форм-фактор корпуса меньше материнской платы - проблема
+				// Например: корпус mATX не подойдет для ATX материнской платы
+				if (!string.IsNullOrEmpty(caseFormFactor) && !string.IsNullOrEmpty(mbFormFactor))
+				{
+					string caseFF = caseFormFactor.ToUpper();
+					string mbFF = mbFormFactor.ToUpper();
+
+					// Проверка совместимости форм-факторов
+					if (mbFF.Contains("ATX") && !caseFF.Contains("ATX"))
+					{
+						issues.Add($"Форм-фактор корпуса ({caseFormFactor}) может быть несовместим с материнской платой ({mbFormFactor}).");
+					}
+					else if (mbFF.Contains("MICRO-ATX") || mbFF.Contains("M-ATX"))
+					{
+						if (!caseFF.Contains("ATX") && !caseFF.Contains("MICRO") && !caseFF.Contains("M-ATX"))
+						{
+							issues.Add($"Форм-фактор корпуса ({caseFormFactor}) может быть несовместим с материнской платой ({mbFormFactor}).");
+						}
+					}
+					else if (mbFF.Contains("MINI-ITX") || mbFF.Contains("ITX"))
+					{
+						if (!caseFF.Contains("ITX") && !caseFF.Contains("ATX") && !caseFF.Contains("MICRO"))
+						{
+							issues.Add($"Форм-фактор корпуса ({caseFormFactor}) может быть несовместим с материнской платой ({mbFormFactor}).");
+						}
+					}
+				}
+			}
+
+			// 4. ОЗУ и материнская плата: проверка типа и частоты памяти
+			if (RAM != null && Motherboard != null &&
+				!string.IsNullOrEmpty(RAM.Specification) &&
+				!string.IsNullOrEmpty(Motherboard.Specification))
+			{
+				string ramType = ExtractValue(RAM.Specification, "Тип");
+				string mbRamType = ExtractValue(Motherboard.Specification, "Память");
+
+				// Проверка типа памяти
+				if (!string.IsNullOrEmpty(ramType) && !string.IsNullOrEmpty(mbRamType))
+				{
+					if (!mbRamType.ToUpper().Contains(ramType.ToUpper()))
+					{
+						issues.Add($"Тип памяти ОЗУ ({ramType}) может быть несовместим с материнской платой (поддерживается: {mbRamType}).");
+					}
+				}
+
+				// Проверка частоты памяти
+				int ramFreq = ExtractFirstNumber(RAM.Specification);
+				if (ramFreq > 0 && !string.IsNullOrEmpty(Motherboard.Specification))
+				{
+					// Проверяем, поддерживает ли материнская плата указанную частоту
+					// Обычно материнские платы поддерживают частоты до определенного максимума
+					// Для простоты проверяем, что частота не слишком высокая (например, больше 5000 MHz может быть проблемой)
+					if (ramFreq > 5000)
+					{
+						issues.Add($"Частота ОЗУ ({ramFreq} MHz) может быть слишком высокой для данной материнской платы. Проверьте совместимость.");
+					}
+				}
+			}
+
+			return issues;
+
+			return issues;
         }
         
         // TODO 3: Рассчитать общую стоимость
@@ -160,9 +248,64 @@ namespace ComputerWorkshop
             // - Для офисного ПК: оценка общей производительности
             return "Средняя";
         }
-        
-        // Показать информацию о сборке
-        public void ShowBuildInfo()
+
+		private static string ExtractValue(string specification, string key)
+		{
+			if (string.IsNullOrEmpty(specification) || string.IsNullOrEmpty(key))
+			{
+				return null;
+			}
+
+			string[] parts = specification.Split(',');
+			foreach (var part in parts)
+			{
+				var trimmed = part.Trim();
+				if (trimmed.StartsWith(key, StringComparison.OrdinalIgnoreCase))
+				{
+					int colonIndex = trimmed.IndexOf(':');
+					if (colonIndex >= 0 && colonIndex < trimmed.Length - 1)
+					{
+						return trimmed.Substring(colonIndex + 1).Trim();
+					}
+				}
+			}
+
+			return null;
+		}
+
+		// Вспомогательный метод: найти первое число в строке
+		private static int ExtractFirstNumber(string text)
+		{
+			if (string.IsNullOrEmpty(text))
+			{
+				return 0;
+			}
+
+			int number = 0;
+			string current = "";
+
+			foreach (char c in text)
+			{
+				if (char.IsDigit(c))
+				{
+					current += c;
+				}
+				else if (current.Length > 0)
+				{
+					break;
+				}
+			}
+
+			if (current.Length > 0 && int.TryParse(current, out number))
+			{
+				return number;
+			}
+
+			return 0;
+		}
+
+		// Показать информацию о сборке
+		public void ShowBuildInfo()
         {
             Console.WriteLine($"=== СБОРКА #{Id}: {Name} ===");
             Console.WriteLine($"Назначение: {Purpose}");
