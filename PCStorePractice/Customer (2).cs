@@ -138,8 +138,8 @@ namespace ComputerWorkshop
             Console.WriteLine($"Заказчик: {FullName}");
             Console.WriteLine($"Телефон: {Phone}");
             Console.WriteLine($"Email: {Email}");
-            // TODO 1: Вывести тип заказчика
-            Console.WriteLine($"Зарегистрирован: {RegistrationDate:dd.MM.yyyy}");
+			Console.WriteLine($"Тип заказчика: {CustomerType}");
+			Console.WriteLine($"Зарегистрирован: {RegistrationDate:dd.MM.yyyy}");
             Console.WriteLine($"Всего заказов: {orders.Count}");
             Console.WriteLine($"Активных заказов: {GetActiveOrders().Count}");
             Console.WriteLine($"Сохраненных конфигураций: {savedConfigs.Count}");
