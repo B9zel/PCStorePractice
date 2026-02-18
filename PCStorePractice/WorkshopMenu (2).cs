@@ -61,16 +61,26 @@ namespace ComputerWorkshop
         public void ConfigureComputer()
         {
             Console.WriteLine("=== КОНФИГУРАТОР КОМПЬЮТЕРА ===");
-            
-            // 1. Запросить название и назначение сборки
-            // 2. Создать новую сборку через manager.CreateTemplateBuild()
-            // 3. Поочередно выбирать компоненты по типам через manager.FindComponentsByType()
-            // 4. Добавлять выбранные компоненты в сборку через build.AddMainComponent()
-            // 5. После выбора всех основных компонентов предложить дополнительные
-            // 6. Проверить совместимость и показать предупреждения
-            // 7. Рассчитать стоимость и оценку производительности
-            // 8. Предложить сохранить конфигурацию
-        }
+
+			ComputerBuild build = CreateBuildInteractively();
+			if (build == null)
+			{
+				Console.WriteLine("Сборка не была создана.");
+				return;
+			}
+
+			Console.WriteLine("\nИтоговая конфигурация:");
+			build.ShowBuildInfo();
+
+			Console.Write("\nКонфигурация уже добавлена в список шаблонов. Оставить как есть? (Enter - да, n - удалить из шаблонов): ");
+			string answer = Console.ReadLine();
+			if (!string.IsNullOrEmpty(answer) && answer.Trim().ToLower() == "n")
+			{
+				var templates = manager.GetTemplateBuilds();
+				templates.Remove(build);
+				Console.WriteLine("Конфигурация не сохранена как шаблон.");
+			}
+		}
         
         // TODO 1: Показать шаблонные сборки
         public void ShowTemplateBuilds()
@@ -226,5 +236,110 @@ namespace ComputerWorkshop
                 Console.WriteLine("Заказчик не найден");
             }
         }
-    }
+
+		// Вспомогательный метод: создание сборки в интерактивном режиме
+		private ComputerBuild CreateBuildInteractively()
+		{
+			string name;
+			do
+			{
+				Console.Write("Введите название сборки: ");
+				name = Console.ReadLine();
+
+			} while (string.IsNullOrEmpty(name));
+
+			string purpose;
+			do
+			{
+				Console.Write("Введите назначение сборки: ");
+				purpose = Console.ReadLine();
+
+			} while (string.IsNullOrEmpty(purpose));
+
+			ComputerBuild build = manager.CreateTemplateBuild(name, purpose);
+
+			Console.WriteLine("\nВыбор основных компонентов.");
+			var cpu = SelectComponentByType("процессор");
+			if (cpu != null) build.AddMainComponent(cpu, "процессор");
+
+			var mb = SelectComponentByType("материнская плата");
+			if (mb != null) build.AddMainComponent(mb, "материнская плата");
+
+			var gpu = SelectComponentByType("видеокарта");
+			if (gpu != null) build.AddMainComponent(gpu, "видеокарта");
+
+			var ram = SelectComponentByType("ОЗУ");
+			if (ram != null) build.AddMainComponent(ram, "ОЗУ");
+
+			var ssd = SelectComponentByType("SSD");
+			if (ssd != null) build.AddMainComponent(ssd, "SSD");
+
+			var psu = SelectComponentByType("блок питания");
+			if (psu != null) build.AddMainComponent(psu, "блок питания");
+
+			var @case = SelectComponentByType("корпус");
+			if (@case != null) build.AddMainComponent(@case, "корпус");
+
+			// Дополнительные компоненты
+			Console.Write("\nДобавить дополнительные компоненты? (y/n): ");
+			string addMore = Console.ReadLine();
+			while (!string.IsNullOrEmpty(addMore) && addMore.Trim().ToLower() == "y")
+			{
+				var allComponents = manager.GetAllComponents();
+				Console.WriteLine("\nДоступные компоненты для добавления:");
+				foreach (var comp in allComponents)
+				{
+					Console.WriteLine($"{comp.Id}. {comp} | Остаток: {comp.StockQuantity}");
+				}
+
+				Console.Write("Введите ID компонента для добавления (0 - отмена): ");
+				string idText = Console.ReadLine();
+				if (int.TryParse(idText, out int id) && id > 0)
+				{
+					var comp = allComponents.FirstOrDefault(c => c.Id == id);
+					if (comp != null)
+					{
+						build.AddAdditionalComponent(comp);
+						Console.WriteLine("Компонент добавлен.");
+					}
+					else
+					{
+						Console.WriteLine("Компонент с таким ID не найден.");
+					}
+				}
+
+				Console.Write("Добавить ещё один дополнительный компонент? (y/n): ");
+				addMore = Console.ReadLine();
+			}
+
+			return build;
+		}
+
+		// Вспомогательный метод: выбор компонента по типу
+		private Component SelectComponentByType(string componentType)
+		{
+			var list = manager.FindComponentsByType(componentType);
+			if (list.Count == 0)
+			{
+				Console.WriteLine($"\nКомпоненты типа '{componentType}' не найдены.");
+				return null;
+			}
+
+			Console.WriteLine($"\nДоступные компоненты ({componentType}):");
+			for (int i = 0; i < list.Count; i++)
+			{
+				Console.WriteLine($"{i + 1}. {list[i]} | Остаток: {list[i].StockQuantity}");
+			}
+
+			Console.Write("Выберите номер компонента (0 - пропустить): ");
+			string choiceText = Console.ReadLine();
+			if (int.TryParse(choiceText, out int choice) &&
+				choice > 0 && choice <= list.Count)
+			{
+				return list[choice - 1];
+			}
+
+			return null;
+		}
+	}
 }
